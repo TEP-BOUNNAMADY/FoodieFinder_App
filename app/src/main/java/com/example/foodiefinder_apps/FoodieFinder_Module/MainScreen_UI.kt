@@ -363,7 +363,7 @@ fun MealItem(
         Row(
             modifier = Modifier
                 .background(Color.White)
-                .padding(16.dp),
+                .padding(13.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(

@@ -183,7 +183,6 @@ class TheFoodieFinderViewModel : ViewModel() {
     }
 
 
-
     // Update searchMeals function
     fun searchMeals(query: String) {
         viewModelScope.launch {
@@ -191,8 +190,16 @@ class TheFoodieFinderViewModel : ViewModel() {
                 fetchDefaultMeals() // Fetch default meals if query is empty
             } else {
                 try {
-                    val response = TheFoodieFinderService.getInstance().searchMeals(query)
-                    _results.value = response.meals ?: emptyList()
+//                    val response = TheFoodieFinderService.getInstance().searchMeals(query)
+//                    _results.value = response.meals ?: emptyList()
+                    if (query.length == 1) {
+                        val response =
+                            TheFoodieFinderService.getInstance().searchMealsByFirstLetter(query)
+                        _results.value = response.meals
+                        println("response.meals: ${response.meals}")
+                    } else {
+                        _results.value = emptyList()
+                    }
                 } catch (e: Exception) {
                     _error.value = e.message ?: "An unknown error occurred"
                     _results.value = emptyList()
@@ -214,6 +221,7 @@ class TheFoodieFinderViewModel : ViewModel() {
         }
         return mealFlow
     }
+
     fun fetchDefaultMeals() {
         viewModelScope.launch {
             try {

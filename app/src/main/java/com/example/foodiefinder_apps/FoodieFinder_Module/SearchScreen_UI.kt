@@ -1,5 +1,7 @@
 package com.example.foodiefinder_apps.FoodieFinder_Module
+
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,25 +14,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowCircleDown
 import androidx.compose.material.icons.filled.ArrowCircleUp
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material3.NavigationBar
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import kotlinx.coroutines.launch
-import androidx.compose.foundation.border
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.CardDefaults
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 
 @Composable
 fun SearchScreenUI(nc: NavController, vm: TheFoodieFinderViewModel) {
@@ -42,6 +38,7 @@ fun SearchScreenUI(nc: NavController, vm: TheFoodieFinderViewModel) {
 
     // Track sort order state
     var isAscending by remember { mutableStateOf(true) }
+
     // Fetch default meals initially
     LaunchedEffect(Unit) {
         vm.fetchDefaultMeals()
@@ -53,7 +50,7 @@ fun SearchScreenUI(nc: NavController, vm: TheFoodieFinderViewModel) {
                 backgroundColor = Color(0xFFDC3D74),
                 contentColor = Color.White,
                 title = {
-                    Text(text = "Search Restaurants", style = TextStyle(fontSize = 20.sp, fontFamily = FontFamily.Cursive))
+                    Text(text = "Search Restaurants", style = MaterialTheme.typography.h6)
                 },
                 navigationIcon = {
                     IconButton(onClick = { nc.popBackStack() }) {
@@ -77,47 +74,16 @@ fun SearchScreenUI(nc: NavController, vm: TheFoodieFinderViewModel) {
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .background(Color(0x81DDD6D6))
         ) {
             // Search Bar
-            Box(
-                modifier = Modifier
-                    .padding(12.dp)
-                    .background(Color(0xFFFFFFFF))
-                    .clip(RoundedCornerShape(30.dp)) // Apply shape here
-            ) {
-                TextField(
-                    value = searchQuery.value,
-                    onValueChange = { query ->
-                        searchQuery.value = query
-                        if (query.isEmpty()) {
-                            // Fetch default meals when search query is empty
-                            vm.fetchDefaultMeals()
-                        } else {
-                            // Perform search
-                            vm.searchMeals(query)
-                        }
-                    },
-                    placeholder = {
-                        Text("Search for your local favorites", style = TextStyle(color = Color.Gray))
-                    },
-                    leadingIcon = {
-                        Icon(Icons.Default.Search, contentDescription = "Search")
-                    },
-                    colors = TextFieldDefaults.textFieldColors(
-                        textColor = Color.Black,
-                        backgroundColor = Color.White, // Lighter background
-                        focusedIndicatorColor = Color.Transparent, // No underline
-                        unfocusedIndicatorColor = Color.Transparent // No underline
-                    ),
-                    shape = RoundedCornerShape(30.dp), // More rounded corners
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .border(1.dp, Color(0xFFF806B6), RoundedCornerShape(40.dp)) // Vibrant border
-                        .padding(horizontal = 16.dp) // Add padding inside
-                )
-            }
+            SearchBar(searchQuery.value, { query ->
+                searchQuery.value = query
+                if (query.isEmpty()) {
+                    vm.fetchDefaultMeals()
+                } else {
+                    vm.searchMeals(query)
+                }
+            })
 
             // Error Handling
             error?.let { errorMessage ->
@@ -167,6 +133,46 @@ fun SearchScreenUI(nc: NavController, vm: TheFoodieFinderViewModel) {
         }
     }
 }
+
+@Composable
+fun SearchBar(
+    query: String,
+    onQueryChange: (String) -> Unit
+) {
+    Card(
+        shape = RoundedCornerShape(30.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp)
+            .background(Color.White),
+        elevation = 8.dp
+
+    ) {
+        TextField(
+            value = query,
+            onValueChange = onQueryChange,
+            placeholder = {
+                Text("Search for your local favorites", style = TextStyle(color = Color.Gray))
+            },
+            leadingIcon = {
+                Icon(Icons.Default.Search, contentDescription = "Search")
+            },
+            colors = TextFieldDefaults.textFieldColors(
+                textColor = Color.Black,
+                backgroundColor = Color.Transparent, // Make background transparent
+                focusedIndicatorColor = Color.Transparent, // No underline
+                unfocusedIndicatorColor = Color.Transparent // No underline
+            ),
+            shape = RoundedCornerShape(30.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .border(1.dp, Color(0xFFF806B6), RoundedCornerShape(30.dp)) // Vibrant border
+                .padding(horizontal = 16.dp) // Add padding inside
+        )
+    }
+}
+
 @Composable
 fun MealItems(
     meal: Meal?,
@@ -181,7 +187,7 @@ fun MealItems(
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start =16.dp, end = 16.dp, bottom = 10.dp)
+                .padding(start = 16.dp, end = 16.dp, bottom = 10.dp)
                 .clickable { onClick(meal) },
             elevation = 8.dp // Set elevation directly as Dp
         ) {
