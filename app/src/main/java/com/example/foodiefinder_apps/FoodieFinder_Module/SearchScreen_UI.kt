@@ -22,7 +22,10 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -50,7 +53,20 @@ fun SearchScreenUI(nc: NavController, vm: TheFoodieFinderViewModel) {
                 backgroundColor = Color(0xFFDC3D74),
                 contentColor = Color.White,
                 title = {
-                    Text(text = "Search Restaurants", style = MaterialTheme.typography.h6)
+                    Text(
+                        text = "Search Restaurants",
+                        style = TextStyle(
+                            fontFamily = FontFamily.Cursive,
+                            fontSize = 27.sp,
+                            color = Color.White,
+                            letterSpacing = 2.5.sp,
+                            shadow = Shadow(
+                                color = Color(0x80000000),
+                                offset = Offset(3f, 3f),
+                                blurRadius = 4f
+                            )
+                        ),
+                    )
                 },
                 navigationIcon = {
                     IconButton(onClick = { nc.popBackStack() }) {

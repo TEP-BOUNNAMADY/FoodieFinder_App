@@ -19,7 +19,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.*
-import androidx.compose.material3.ListItemDefaults.contentColor
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,7 +26,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
-
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -40,7 +38,7 @@ import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun MainScreenUI(nc: NavHostController, vm: TheFoodieFinderViewModel = viewModel()) {
     val categories by vm.categories.collectAsState(emptyList())
@@ -50,7 +48,7 @@ fun MainScreenUI(nc: NavHostController, vm: TheFoodieFinderViewModel = viewModel
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val selectedCategory = remember { mutableStateOf<String?>(null) }
-    val error by vm.error.collectAsState() // Assuming you have an error state in your ViewModel
+    val error by vm.error.collectAsState()
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -80,8 +78,7 @@ fun MainScreenUI(nc: NavHostController, vm: TheFoodieFinderViewModel = viewModel
                 },
                 navigationIcon = {
                     IconButton(onClick = { /* Handle navigation click */ }) {
-                        val painter =
-                            rememberAsyncImagePainter("https://i.pinimg.com/736x/bc/63/e8/bc63e892be4e597a70ec50b825f95978.jpg")
+                        val painter = rememberAsyncImagePainter("https://i.pinimg.com/736x/bc/63/e8/bc63e892be4e597a70ec50b825f95978.jpg")
                         Image(
                             painter = painter,
                             contentDescription = "Logo",
@@ -188,11 +185,11 @@ fun Carousel(meals: List<Meal>, itemContent: @Composable (Meal) -> Unit) {
         if (meals.isEmpty()) {
             CircularProgressIndicator()
         } else {
-            Box(
+            Card(
+                shape = RoundedCornerShape(16.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(250.dp) // Adjusted height to fit the images and content compactly
-                    .background(Color(0xFFFFFFFF))
+                    .height(220.dp) // Adjusted height to fit the images and content compactly
             ) {
                 HorizontalPager(state = pagerState) { page ->
                     itemContent(meals[page])
@@ -253,17 +250,16 @@ fun MealCarouselItem(meal: Meal, onClick: (Meal) -> Unit) {
             .padding(8.dp)
             .fillMaxWidth()
             .clickable { onClick(meal) },
-        shape = RoundedCornerShape(10.dp) // Rounded corners for the card
+        shape = RoundedCornerShape(10.dp)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFFFFFFFF))
+                .background(Color.White)
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                // Image with aspect ratio and rounded corners
                 AsyncImage(
                     model = meal.strMealThumb,
                     contentDescription = meal.strMeal,
@@ -274,21 +270,19 @@ fun MealCarouselItem(meal: Meal, onClick: (Meal) -> Unit) {
                         .clip(RoundedCornerShape(10.dp))
                 )
             }
-            // Badge for cooking time (now correctly placed)
             Box(
                 modifier = Modifier
-                    .align(Alignment.BottomStart) // Align within the outer Box
+                    .align(Alignment.BottomStart)
                     .padding(8.dp)
                     .background(Color(0xFFE691AD), shape = RoundedCornerShape(8.dp))
                     .padding(horizontal = 12.dp, vertical = 10.dp)
             ) {
                 Text(
-                    text = "${meal.strMeal} Min", // Use cooking time here instead
+                    text = "${meal.strMeal} Min",
                     color = Color.White,
                     style = TextStyle(
                         fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = contentColor
+                        fontWeight = FontWeight.Bold
                     ),
                 )
             }
@@ -356,7 +350,7 @@ fun MealItem(
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start =11.dp, end = 11.dp, bottom = 10.dp)
+            .padding(start = 9.dp, end = 9.dp, bottom = 10.dp)
             .clickable { onClick(meal) },
         elevation = CardDefaults.cardElevation(8.dp)
     ) {
@@ -387,11 +381,12 @@ fun MealItem(
                     )
                 )
                 Text(
-                    text = "From: ${meal.strArea ?: "Unknown"}",  // Fixed here
+                    text = "From: ${meal.strArea ?: "Unknown"}",
                     style = TextStyle(
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF666666)                    )
+                        color = Color(0xFF666666)
+                    )
                 )
             }
             IconButton(onClick = {
